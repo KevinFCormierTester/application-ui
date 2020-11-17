@@ -84,6 +84,7 @@ export const gitTasks = (clusterName, value, gitCss, key = 0) => {
     .get(gitPath, { timeout: 20 * 1000 })
     .type(path, { timeout: 30 * 1000 })
     .blur();
+  selectPrePostTasks(value, key);
   selectClusterDeployment(deployment, clusterName, key);
   selectTimeWindow(timeWindow, key);
 };
@@ -173,7 +174,7 @@ export const createGit = (clusterName, configs, addOperation) => {
         clusterName,
         value,
         gitCss,
-        parseInt(key) + Object.entries(configs.config).length - 1,
+        parseInt(key) + Object.entries(configs.config).length,
         gitTasks
       );
     }
@@ -603,6 +604,51 @@ export const deleteApplicationUI = name => {
     deleteResourceUI(name, "placementrules");
     // no existing channels
     // deleteResourceUI(name, "channels");
+  }
+};
+
+export const selectPrePostTasks = (value, key) => {
+  const { ansibleSecretName, ansibleHost, ansibleToken } = value;
+  if (!ansibleSecretName) {
+    cy.log("PrePost SecretName not available, ignore this section");
+    return;
+  }
+  let prePostCss = {
+    gitAnsibleSecret: "#ansibleSecretName",
+    gitAnsibleHost: "#ansibleTowerHost",
+    gitAnsibleToken: "#ansibleTowerToken"
+  };
+  key == 0
+    ? prePostCss
+    : Object.keys(prePostCss).forEach(k => {
+        prePostCss[k] = prePostCss[k] + `grp${key}`;
+      });
+  const { gitAnsibleSecret, gitAnsibleHost, gitAnsibleToken } = prePostCss;
+
+  key == 0
+    ? cy.get("#perpostsection-set-pre-and-post-deployment-tasks").click()
+    : cy
+        .get(`#perpostsectiongrp${key}-set-pre-and-post-deployment-tasks`)
+        .click();
+
+  if (ansibleHost && ansibleToken) {
+    cy.log(`Setting PrePost tasks using new Secret ${ansibleSecretName}`);
+    cy
+      .get(gitAnsibleSecret, { timeout: 20 * 1000 })
+      .type(ansibleSecretName, { timeout: 30 * 1000 })
+      .blur();
+    cy.wait(1000);
+    cy.get(gitAnsibleHost).type(ansibleHost);
+    cy.get(gitAnsibleToken).type(ansibleToken);
+  } else {
+    cy.log(`Setting PrePost tasks using existing Secret ${ansibleSecretName}`);
+    cy.get(gitAnsibleSecret).click();
+    cy.wait(1000);
+    cy
+      .get(".bx--list-box__menu-item", {
+        timeout: 30 * 1000
+      })
+      .click();
   }
 };
 

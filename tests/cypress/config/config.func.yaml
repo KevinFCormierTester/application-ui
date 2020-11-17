@@ -1,7 +1,7 @@
 ---
 git:
   data:
-    - enable: true
+    - enable: false
       name: ui-git
       type: git
       successNumber: 0 #should have at least 0 resources with status success in the cards status
@@ -70,9 +70,39 @@ git:
             local: true
             online: false
             matchingLabel: false
+    - enable: true
+      name: ui-git-ansible
+      type: git
+      successNumber: 0
+      new: # used when we add new subscriptions after app creation
+        - url: https://github.com/fxiang1/app-samples.git
+          username: ""
+          token: ""
+          branch: master
+          path: ansible
+          ansibleSecretName: test-secret-name
+          ansibleHost: ""
+          ansibleToken: ""
+          deployment:
+            local: false
+            online: true
+            matchingLabel: false                 
+      config:    
+        - url: https://github.com/fxiang1/app-samples.git
+          username: ""
+          token: ""
+          branch: master
+          path: ansible
+          ansibleSecretName: test-secret-name
+          ansibleHost: test-host
+          ansibleToken: test-token
+          deployment:
+            local: false
+            online: true
+            matchingLabel: false       
 objectstore:
   data:
-    - enable: true
+    - enable: false
       name: ui-obj
       type: objectstore
       successNumber: 0
@@ -142,7 +172,7 @@ objectstore:
             matchingLabel: false
 helm:
   data:
-    - enable: true
+    - enable: false
       name: ui-helm
       type: helm
       successNumber: 0
@@ -192,7 +222,7 @@ helm:
             local: true
             online: false
             matchingLabel: false
-    - enable: true
+    - enable: false
       name: ui-helm2
       type: helm
       successNumber: 0
